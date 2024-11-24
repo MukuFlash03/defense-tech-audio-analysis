@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 import base64
 # Set page title and header
-st.title("Defense Hackathon Quickstart: War Audio Transcription & Translation")
+st.title("Defense Tech: War Audio Interface")
 
 
 

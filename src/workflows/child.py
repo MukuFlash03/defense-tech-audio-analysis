@@ -38,7 +38,7 @@ class WorkflowOutputParams:
     translation_2: str
     conversation_analysis: str
     db_write_audio: Any
-    db_read_audio: str
+    # db_read_audio: str
 
 @dataclass
 class WorkflowOutputTestParams:
@@ -100,7 +100,7 @@ class ChildWorkflow:
         log.info("Completed translation_2....")
 
         extract_info_prompt = f"""
-        Instructions: Translate the following content to English. Output only the translated content.
+        Instructions: Analyze the following content that is a military conversation transcript. Output only analyzed content as per format.
         Content: {combined_text}
         """
 
@@ -127,12 +127,12 @@ class ChildWorkflow:
           )
         log.info("After writing to DB in child workflow")
 
-        log.info("Before reading from DB in child workflow")
-        db_read_audio = await workflow.step(
-              read_from_audio_table,
-              start_to_close_timeout=timedelta(seconds=120),
-          )
-        log.info("After reading from DB in child workflow")
+        # log.info("Before reading from DB in child workflow")
+        # db_read_audio = await workflow.step(
+        #       read_from_audio_table,
+        #       start_to_close_timeout=timedelta(seconds=120),
+        #   )
+        # log.info("After reading from DB in child workflow")
 
         log.info(
             "ChildWorkflow completed",
@@ -141,7 +141,7 @@ class ChildWorkflow:
             translation_2=translation_2["content"],
             conversation_analysis=extraction_json_data,
             db_write_audio=db_write_audio,
-            db_read_audio=db_read_audio
+            # db_read_audio=db_read_audio
         )
 
         return WorkflowOutputParams(
@@ -150,7 +150,7 @@ class ChildWorkflow:
             translation_2=translation_2["content"],
             conversation_analysis=extraction_json_data,
             db_write_audio=db_write_audio,
-            db_read_audio=db_read_audio
+            # db_read_audio=db_read_audio
         )
 
         # return WorkflowOutputTestParams(

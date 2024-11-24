@@ -23,78 +23,6 @@ class FunctionInputParams:
 T = TypeVar("T", bound=BaseModel)
 
 print("Inside basic_agent.py")
-print("OpenAI API key:", os.getenv("OPENAI_API_KEY"))
-
-# client: OpenAI = OpenAI()
-# async_client: AsyncOpenAI = AsyncOpenAI()
-
-
-# def parse_input(
-#     system_content: str,
-#     user_content: str,
-#     response_format: Type[T],
-#     # model: str = "gpt-4o-2024-08-06",
-#     model: str = "gpt-4o-mini",
-# ) -> T:
-#     """
-#     Generates a response from OpenAI based on the given inputs and model.
-
-#     Args:
-#         model (str): The OpenAI model to use for the completion.
-#         system_content (str): Content for the system role.
-#         user_content (str): Content for the user query.
-#         response_format (Type[T]): The class type of the response format (a Pydantic model).
-
-#     Returns:
-#         T: Parsed response from the completion in the type specified by response_format.
-#     """
-#     completion = client.beta.chat.completions.parse(
-#         model=model,
-#         messages=[
-#             {"role": "system", "content": system_content},
-#             {"role": "user", "content": user_content},
-#         ],
-#         response_format=response_format,
-#     )
-
-#     if completion.choices[0].message.parsed is None:
-#         raise ValueError("Failed to parse response.")
-
-#     return completion.choices[0].message.parsed
-
-# async def parse_input_async(
-#     system_content: str,
-#     user_content: str,
-#     response_format: Type[T],
-#     # model: str = "gpt-4o-2024-08-06",
-#     model: str = "gpt-4o-mini",
-# ) -> T:
-#     """
-#     Generates a response from OpenAI based on the given inputs and model.
-
-#     Args:
-#         model (str): The OpenAI model to use for the completion.
-#         system_content (str): Content for the system role.
-#         user_content (str): Content for the user query.
-#         response_format (Type[T]): The class type of the response format (a Pydantic model).
-
-#     Returns:
-#         T: Parsed response from the completion in the type specified by response_format.
-#     """
-#     completion = await async_client.beta.chat.completions.parse(
-#         model=model,
-#         messages=[
-#             {"role": "system", "content": system_content},
-#             {"role": "user", "content": user_content},
-#         ],
-#         response_format=response_format,
-#     )
-
-#     if completion.choices[0].message.parsed is None:
-#         raise ValueError("Failed to parse response.")
-
-#     return completion.choices[0].message.parsed
-
 
 async def parse_info_async(input: FunctionInputParams):
     try:
@@ -123,45 +51,147 @@ async def parse_info_async(input: FunctionInputParams):
         log.info("About to call OpenAI API")
 
         response = await async_client.beta.chat.completions.parse(
-        # response = await client.beta.chat.completions.parse(
             model="gpt-4o",
             messages=[
                 {
                     "role": "system", 
                     "content": f"""
-                        Extract the required detailed analysis from the conversation.
+                        Analyze the military conversation and extract detailed tactical information using this structure:
 
-                        Reliability of Source
-                        For source_reliability key, a source is assessed for reliability based on a technical assessment of its capability, 
-                        or in the case of Human Intelligence sources their history. 
-                        Notation uses Alpha coding, A-F:
+                        Priority Level: Assess urgency based on tactical situation (High/Medium/Low)
+                        
+                        Risk Assessment: Evaluate immediate military threats, enemy movements, and tactical vulnerabilities
+                        
+                        Key Insights: Summarize critical military information including:
+                        - Enemy force composition and movements
+                        - Distances and directions
+                        - Tactical objectives identified
+                        - Support requirements
+                        
+                        Critical Entities: List key military assets, personnel, and locations mentioned
+                        
+                        Locations Mentioned: Extract all geographic references, including:
+                        - Cities/Towns
+                        - Roads/Routes
+                        - Tactical landmarks
+                        
+                        Sentiment Summary: Analyze operational urgency and command dynamics
+                        
+                        Source Reliability: Use standard A-F classification. Randomize this, doesn't have to be accurate.
+                          A - Completely reliable: No doubt of authenticity, trustworthiness, or competency; has a history of complete reliability
+                          B - Usually reliable: Minor doubt about authenticity, trustworthiness, or competency; has a history of valid information most of the time
+                          C - Fairly reliable: Doubt of authenticity, trustworthiness, or competency but has provided valid information in the past
+                          D - Not usually reliable: Significant doubt about authenticity, trustworthiness, or competency but has provided valid information in the past
+                          E - Unreliable: Lacking in authenticity, trustworthiness, and competency; history of invalid information
+                          F - Reliability cannot be judged: No basis exists for evaluating the reliability of the source
+                        
+                        Information Credibility: Use standard 1-6 classification. Randomize this, doesn't have to be accurate.
+                          1 - Confirmed by other sources: Confirmed by other independent sources; logical in itself; Consistent with other information on the subject
+                          2 - Probably True: Not confirmed; logical in itself; consistent with other information on the subject
+                          3 - Possibly True: Not confirmed; reasonably logical in itself; agrees with some other information on the subject
+                          4 - Doubtful: Not confirmed; possible but not logical; no other information on the subject
+                          5 - Improbable: Not confirmed; not logical in itself; contradicted by other information on the subject
+                          6 - Truth cannot be judged: No basis exists for evaluating the validity of the information
+                        
+                        Recommended Actions: List tactical recommendations based on the situation
+                        
+                        Entity Relationships: Document command structure and unit interactions
+                        
+                        Speakers: List all participants in the conversation
+                        
+                        Conversation Duration: Estimate length of exchange
 
-                        A - Completely reliable: No doubt of authenticity, trustworthiness, or competency; has a history of complete reliability
-                        B - Usually reliable: Minor doubt about authenticity, trustworthiness, or competency; has a history of valid information most of the time
-                        C - Fairly reliable: Doubt of authenticity, trustworthiness, or competency but has provided valid information in the past
-                        D - Not usually reliable: Significant doubt about authenticity, trustworthiness, or competency but has provided valid information in the past
-                        E - Unreliable: Lacking in authenticity, trustworthiness, and competency; history of invalid information
-                        F - Reliability cannot be judged: No basis exists for evaluating the reliability of the source
-                      
-                      Credibility 
-                      For information_credibility key, an item is assessed for credibility based on likelihood and levels of corroboration by other sources
-                      which measures accuracy of data.
-                      Notation uses a numeric code, 1-6.
+                        Example Transcript:
+                        Speaker B: Contact detected at the western outskirts of Bakhmut. Two armored vehicles are moving towards our position.
+                        Speaker A: Dmitry, can you see them from your point?
+                        Speaker B: Yes. Viktor, it seems to be part of the unit we've been tracking from the watch ravine. I count at least 12 infantrymen.
+                        Speaker A: How close are they to the Berkhivska road?
+                        Speaker B: About 800 meters south. It looks like they are setting up a forward position.
+                        Speaker A: Dmitry, check if they are setting up heavy weapons. We have data on anti-tank positions in this sector.
+                        Speaker B: Understood. Wait. I see movement towards Ivanivske. Several columns.
+                        Speaker A: We need immediate support. I'm calling it in. Exact distance from your position.
+                        Speaker B: One to two kilometers moving fast. We need artillery before they reach the tree line.
+                        Speaker A: Coordinates confirmed. Hold your position and keep an eye on the target.
 
-                      1 - Confirmed by other sources: Confirmed by other independent sources; logical in itself; Consistent with other information on the subject
-                      2 - Probably True: Not confirmed; logical in itself; consistent with other information on the subject
-                      3 - Possibly True: Not confirmed; reasonably logical in itself; agrees with some other information on the subject
-                      4 - Doubtful: Not confirmed; possible but not logical; no other information on the subject
-                      5 - Improbable: Not confirmed; not logical in itself; contradicted by other information on the subject
-                      6 - Truth cannot be judged: No basis exists for evaluating the validity of the information
-                      """
+                        Example Analysis:
+                           "priority_level": "High",
+                            "risk_assessment": "Potential threat from enemy movement and positioning near Bakhmut.",
+                            "key_insights": "Enemy forces, including two armored vehicles and at least 12 infantrymen, are moving towards the speaker's position near Bakhmut. They are approximately 800 meters south of Berkhivska Road and seem to be establishing a forward position. There is also movement towards Ivanivske, indicating a possible larger operation.",
+                            "critical_entities": [
+                                "Bakhmut",
+                                "Berkhivska Road",
+                                "Ivanivske",
+                                "Dmitry",
+                                "Victor"
+                            ],
+                            "locations_mentioned": [
+                                "Bakhmut",
+                                "Berkhivska Road",
+                                "Ivanivske"
+                            ],
+                            "sentiment_summary": "The conversation reflects a sense of urgency and concern about enemy movements and the need for immediate support.",
+                            "source_reliability": "B - Usually reliable",
+                            "information_credibility": "2 - Probably True",
+                            "recommended_actions": [
+                                "Request immediate artillery support to target enemy movements before they reach the tree line.",
+                                "Monitor the installation of heavy weaponry by the enemy.",
+                                "Maintain current position and continue surveillance of enemy activities."
+                            ],
+                            "entity_relationships": "Speaker A and Speaker B are coordinating to monitor and respond to enemy movements near Bakhmut.",
+                            "speakers": [
+                                "Speaker A",
+                                "Speaker B"
+                            ],
+                            "conversation_duration": "Short",
+                            "analyzed_at": "2023-10-21T00:00:00Z"
+                        
+                        Focus on extracting actionable military intelligence from the conversation content.
+                    """
+
                 },
                 {
                     "role": "user", 
-                    "content": "Extract the required detailed analysis from the conversation."
-                    # "content": input.user_prompt
+                    # "content": "Extract the required detailed analysis from the conversation."
+                    "content": input.user_prompt
                 },
             ],
+            # messages=[
+            #     {
+            #         "role": "system", 
+            #         "content": f"""
+            #             Extract the required detailed analysis from the conversation.
+
+            #             Reliability of Source
+            #             For source_reliability key, a source is assessed for reliability based on a technical assessment of its capability, 
+            #             or in the case of Human Intelligence sources their history. 
+            #             Notation uses Alpha coding, A-F:
+
+            #             A - Completely reliable: No doubt of authenticity, trustworthiness, or competency; has a history of complete reliability
+            #             B - Usually reliable: Minor doubt about authenticity, trustworthiness, or competency; has a history of valid information most of the time
+            #             C - Fairly reliable: Doubt of authenticity, trustworthiness, or competency but has provided valid information in the past
+            #             D - Not usually reliable: Significant doubt about authenticity, trustworthiness, or competency but has provided valid information in the past
+            #             E - Unreliable: Lacking in authenticity, trustworthiness, and competency; history of invalid information
+            #             F - Reliability cannot be judged: No basis exists for evaluating the reliability of the source
+                      
+            #           Credibility 
+            #           For information_credibility key, an item is assessed for credibility based on likelihood and levels of corroboration by other sources
+            #           which measures accuracy of data.
+            #           Notation uses a numeric code, 1-6.
+
+            #           1 - Confirmed by other sources: Confirmed by other independent sources; logical in itself; Consistent with other information on the subject
+            #           2 - Probably True: Not confirmed; logical in itself; consistent with other information on the subject
+            #           3 - Possibly True: Not confirmed; reasonably logical in itself; agrees with some other information on the subject
+            #           4 - Doubtful: Not confirmed; possible but not logical; no other information on the subject
+            #           5 - Improbable: Not confirmed; not logical in itself; contradicted by other information on the subject
+            #           6 - Truth cannot be judged: No basis exists for evaluating the validity of the information
+            #           """
+            #     },
+            #     {
+            #         "role": "user", 
+            #         "content": "Extract the required detailed analysis from the conversation."
+            #         # "content": input.user_prompt
+            #     },
+            # ],
             temperature=0.0,
             response_format=ConversationAnalysis,
         )
@@ -185,22 +215,3 @@ async def parse_info_async(input: FunctionInputParams):
         )
         raise
 
-# async def main() -> str:
-#     personal_details: PersonalDetails = await parse_input_async(
-#         system_content="""Extract the personal details of name, \
-# email, location and phone from the resume.""",
-#         user_content="Email : dheerajpai@fgmail.com<Dheeraj>, Palo Alto, 268-987-DPAI",
-#         response_format=PersonalDetails,
-#     )
-#     # return personal_details
-#     return ""
-
-
-# if __name__ == "__main__":
-#     import asyncio
-
-#     asyncio.run(main())
-
-#     # Example to test parse_input_async function
-
-#     pass
