@@ -1,26 +1,22 @@
 from pydantic import BaseModel
 from typing import Dict, List
 
-class ConversationAnalysisA(BaseModel):
+class ConversationAnalysis(BaseModel):
     priority_level: str
     risk_assessment: str
-    recommended_actions: List[str]
-    entity_relationships: str
-    emotions_per_speaker: Dict[str, List[str]]
-    speakers: List[str]
-    speaker_roles: Dict[str, str]
-    conversation_duration: str
-    conversation_timestamp: str
-
-class ConversationAnalysisB(BaseModel):
     key_insights: str
     critical_entities: List[str]
     locations_mentioned: List[str]
     sentiment_summary: str
     source_reliability: str
     information_credibility: str
+    recommended_actions: List[str]
+    entity_relationships: str
+    # emotions_per_speaker: Dict[str, List[str]]
+    speakers: List[str]
+    # speaker_roles: Dict[str, str]
+    conversation_duration: str
     analyzed_at: str
-
 
 
 # # DO NOT USE THIS FOR NOW. Directly output each stuff as model_dump()

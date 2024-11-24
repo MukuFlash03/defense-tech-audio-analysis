@@ -1,0 +1,39 @@
+{
+  "priority_level": "High",
+  "risk_assessment": "Complex covert operation in progress; critical timing dependencies",
+  "key_insights": "Electronic warfare operation prepared with sleeper modules, equipment caches established, enemy air defense analyzed",
+  "critical_entities": [
+      "Dmitry",
+      "Victor",
+      "RB complexes",
+      "sleeper modules",
+      "electronic warfare systems",
+      "calibers"
+  ],
+  "locations_mentioned": [
+      "Point A",
+      "Point B",
+      "corridor"
+  ],
+  "sentiment_summary": "Precise, coordinated, methodical preparation for complex operation",
+  "source_reliability": "A",
+  "information_credibility": "1",
+  "recommended_actions": [
+      "Monitor electronic warfare systems deployment",
+      "Verify sleeper module status",
+      "Maintain surveillance of disinformation effectiveness",
+      "Prepare for 15-minute deployment window"
+  ],
+  "entity_relationships": "Dmitry and Victor are part of coordinated operation team with specialized roles",
+  "emotions_per_speaker": {
+      "Speaker A": ["focused", "methodical", "confident"],
+      "Speaker B": ["precise", "coordinated"]
+  },
+  "speakers": ["Speaker A", "Speaker B"],
+  "speaker_roles": {
+      "Speaker A": "Operation Coordinator",
+      "Speaker B": "Field Commander"
+  },
+  "conversation_duration": "4 minutes",
+    "analyzed_at": "2024-11-24T11:05:00Z"
+}

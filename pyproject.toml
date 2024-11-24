@@ -20,6 +20,7 @@ openai = "^1.55.0"
 torch = {version = "^2.5.1", platform = "darwin"}
 transformers = {extras = ["torch"], version = "^4.46.3"}
 assemblyai = "^0.35.1"
+psycopg2 = "^2.9.10"
 
 
 [build-system]

@@ -16,10 +16,14 @@ with import_functions():
         identify_speakers,
         FunctionInputParams as IdentifySpeakerFunctionInputParams,
     )
-    # from src.functions.identify_speaker import (
-    #     process_command_audio,
-    #     FunctionInputParams as IdentifySpeakerFunctionInputParams,
-    # )
+    from src.functions.agents.extract_info import (
+        extract_info,
+        FunctionInputParams as ExtractInfoFunctionInputParams,
+    )
+    from src.functions.db_audio_analysis import (
+        read_from_audio_table
+    )
+
 
 
 @dataclass
@@ -32,7 +36,11 @@ class WorkflowOutputParams:
     transcription: str
     translation: str
     translation_2: str
+    conversation_analysis: str
 
+@dataclass
+class WorkflowOutputTestParams:
+    db_read_test: str
 
 @workflow.defn()
 class ChildWorkflow:
@@ -40,77 +48,98 @@ class ChildWorkflow:
     async def run(self, input: WorkflowInputParams):
         log.info("ChildWorkflow started", input=input)
 
-        transcription = await workflow.step(
-            transcribe,
-            TranscribeFunctionInputParams(file_data=input.file_data),
-            start_to_close_timeout=timedelta(seconds=120),
-        )
-
-        translation_prompt = f"""
-        Instructions: Translate the following content to English. Output only the translated content.
-        Content: {transcription['text']}
-        """
-
-        translation = await workflow.step(
-            translate,
-            TranslationFunctionInputParams(user_prompt=translation_prompt),
-            start_to_close_timeout=timedelta(seconds=120),
-        )
-
-        # speaker_analysis = await workflow.step(
-        #     process_command_audio,
-        #     IdentifySpeakerFunctionInputParams(
-        #         audio_data=input.file_data,
-        #         command_text=translation["content"],
-        #     ),
+        # transcription = await workflow.step(
+        #     transcribe,
+        #     TranscribeFunctionInputParams(file_data=input.file_data),
         #     start_to_close_timeout=timedelta(seconds=120),
         # )
 
-        speaker_identification_transcript = await workflow.step(
-            identify_speakers,
-            IdentifySpeakerFunctionInputParams(file_data=input.file_data),
+        # translation_prompt = f"""
+        # Instructions: Translate the following content to English. Output only the translated content.
+        # Content: {transcription['text']}
+        # """
+
+        # translation = await workflow.step(
+        #     translate,
+        #     TranslationFunctionInputParams(user_prompt=translation_prompt),
+        #     start_to_close_timeout=timedelta(seconds=120),
+        # )
+
+        # speaker_identification_transcript = await workflow.step(
+        #     identify_speakers,
+        #     IdentifySpeakerFunctionInputParams(file_data=input.file_data),
+        #     start_to_close_timeout=timedelta(seconds=120),
+        # )
+
+        # # print("Speaker Identification: \n", speaker_identification_transcript)
+
+
+        # combined_text = "\n".join(
+        #     f"Speaker {utterance['speaker']}: {utterance['text']}"
+        #     for utterance in speaker_identification_transcript['utterances']
+        # )
+
+        # # Create translation prompt
+        # translation_prompt_2 = f"""
+        # Instructions: Translate the following content to English. Output only the translated content.
+        # Content: {combined_text}
+        # """
+
+        # log.info("Running translation_2....")
+
+        # # Pass to translation function
+        # translation_2 = await workflow.step(
+        #     translate,
+        #     TranslationFunctionInputParams(user_prompt=translation_prompt_2),
+        #     start_to_close_timeout=timedelta(seconds=120),
+        # )
+
+        # log.info("Completed translation_2....")
+
+        # # formatted_translation = format_translated_conversation(translation_2)
+        # # log.info("Formatted Translation:")
+        # # log.info(formatted_translation)
+
+        # extract_info_prompt = f"""
+        # Instructions: Translate the following content to English. Output only the translated content.
+        # Content: {combined_text}
+        # """
+
+        # log.info("Running extract_info....")
+
+        # # Pass to translation function
+        # extraction_json_data = await workflow.step(
+        #     extract_info,
+        #     ExtractInfoFunctionInputParams(user_prompt=translation_prompt_2),
+        #     start_to_close_timeout=timedelta(seconds=120),
+        # )
+
+        # log.info("Completed extract_info....")
+
+
+        # log.info(
+        #     "ChildWorkflow completed",
+        #     transcription=transcription["text"],
+        #     translation=translation["content"],
+        #     translation_2=translation_2["content"],
+        #     conversation_analysis=extraction_json_data,
+        #     # speaker_identification=speaker_identification["content"],
+        # )
+        # return WorkflowOutputParams(
+        #     transcription=transcription["text"],
+        #     translation=translation["content"],
+        #     translation_2=translation_2["content"],
+        #     conversation_analysis=extraction_json_data,
+        #     # speaker_identification=speaker_identification["content"],
+        # )
+
+        log.info("Before reading from DB in child workflow")
+        db_read_test = await workflow.step(
+            read_from_audio_table,
             start_to_close_timeout=timedelta(seconds=120),
         )
+        log.info("After reading from DB in child workflow")
 
-        # print("Speaker Identification: \n", speaker_identification_transcript)
-
-
-        combined_text = "\n".join(
-            f"Speaker {utterance['speaker']}: {utterance['text']}"
-            for utterance in speaker_identification_transcript['utterances']
-        )
-
-        # Create translation prompt
-        translation_prompt_2 = f"""
-        Instructions: Translate the following content to English. Output only the translated content.
-        Content: {combined_text}
-        """
-
-        log.info("Running translation_2....")
-
-        # Pass to translation function
-        translation_2 = await workflow.step(
-            translate,
-            TranslationFunctionInputParams(user_prompt=translation_prompt_2),
-            start_to_close_timeout=timedelta(seconds=120),
-        )
-
-        log.info("Completed translation_2....")
-
-        # formatted_translation = format_translated_conversation(translation_2)
-        # log.info("Formatted Translation:")
-        # log.info(formatted_translation)
-
-        log.info(
-            "ChildWorkflow completed",
-            transcription=transcription["text"],
-            translation=translation["content"],
-            translation_2=translation_2["content"],
-            # speaker_identification=speaker_identification["content"],
-        )
-        return WorkflowOutputParams(
-            transcription=transcription["text"],
-            translation=translation["content"],
-            translation_2=translation_2["content"],
-            # speaker_identification=speaker_identification["content"],
+        return WorkflowOutputTestParams(
+            db_read_test=db_read_test
         )

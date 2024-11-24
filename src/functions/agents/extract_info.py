@@ -1,87 +1,65 @@
 from restack_ai.function import function, log
+from openai import OpenAI
 from dataclasses import dataclass
-from groq import Groq
 import os
-import base64
+import sys
+from typing import List, Type, TypeVar, Any
+from pydantic import BaseModel
 from dotenv import load_dotenv
-import assemblyai as aai
 
 load_dotenv()
 
+current_file_path = os.path.abspath(__file__)
+parent_directory = os.path.dirname(os.path.dirname(current_file_path))
+sys.path.append(parent_directory)
+
+from .custom_types import ( 
+  ConversationAnalysis
+)
+
+from .workflow import (
+    get_conversation_info
+)
+
+# Define a generic type variable
+T = TypeVar("T", bound=BaseModel)
+
+print("Inside extract_info.py")
+print("OpenAI API key:", os.getenv("OPENAI_API_KEY"))
+
+# client: OpenAI = OpenAI()
+# async_client: AsyncOpenAI = AsyncOpenAI()
+
+
 @dataclass
 class FunctionInputParams:
-    transcription: str
+    user_prompt: str
 
 @function.defn()
-async def identify_speakers(input: FunctionInputParams):
+async def extract_info(input: FunctionInputParams):
     try:
-        log.info("speaker identification function started", input=input)
-        client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+        log.info("extract_info function started", input=input)
 
-        aai.settings.api_key = os.getenv("ASSEMBLYAI_API_KEY")
-
-        config = aai.TranscriptionConfig(
-            speaker_labels=True,
-            language_code="ru"
+        log.info("Before calling get_conversation_info")
+        conversation_analysis = (
+            await get_conversation_info(input)
         )
+        log.info("After calling get_conversation_info")
 
-        transcriber = aai.Transcriber(config=config)
+        log.info("Before returning json_data in extract_info")
+        json_data = conversation_analysis.model_dump_json(indent=4)
+        log.info("After returning json_data in extract_info") 
 
-        filename, base64_content = input.file_data
-        print("Filename: ", filename)
-
-        # FILE_URL = "https://assembly.ai/wildfires.mp3"
-
-        project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        FILE_URL = os.path.join(project_root, 'synthetic_audio', filename)
-
-        print("FILE_URL: ", FILE_URL)
-
-        transcript = transcriber.transcribe(FILE_URL)
-
-        # extract all utterances from the response
-        utterances = transcript.utterances
-
-        # For each utterance, print its speaker and what was said
-        for utterance in utterances:
-          speaker = utterance.speaker
-          text = utterance.text
-          print(f"Speaker {speaker}: {text}")
-
-        # filename, base64_content = input.file_data
-        # file_bytes = base64.b64decode(base64_content)
-        # transcription = client.audio.transcriptions.create(
-        #     file=(filename, file_bytes), # Required audio file
-        #     model="whisper-large-v3-turbo", # Required model to use for transcription
-        #     # Best practice is to write the prompt in the language of the audio, use translate.google.com if needed
-        #     prompt=f"Опиши о чем речь в аудио",  # Translation: Describe what the audio is about
-        #     language="ru", # Original language of the audio
-        #     response_format="json",  # Optional
-        #     temperature=0.0  # Optional
-        # )
-
-        log.info("speaker identification function completed", transcription=utterances)
-
-        formatted_transcript = {
-            'utterances': [
-                {
-                    'speaker': utterance.speaker,
-                    'text': utterance.text,
-                    # Optionally include other metadata if needed later
-                    'start': utterance.start,
-                    'end': utterance.end,
-                    'confidence': utterance.confidence
-                }
-                for utterance in transcript.utterances
-            ]
-        }
-        
-        log.info("speaker identification transcription formatting completed", transcription=utterances)
-        
-        return formatted_transcript
-        # return utterances
-        
-
+        return json_data
+  
+    except ValueError as ve:
+        log.error("Inside extract_info: Configuration error", error=str(ve))
+        raise
     except Exception as e:
-        log.error("speaker identification function failed", error=e)
-        raise e
+        log.error(
+            "extract_info function failed",
+            error=str(e),
+            error_type=type(e).__name__,
+            api_url=os.environ.get("OPENBABYLON_API_URL"),
+        )
+        raise
