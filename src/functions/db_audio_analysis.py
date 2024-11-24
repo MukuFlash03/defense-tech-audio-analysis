@@ -56,7 +56,7 @@ async def write_to_audio_table(input):
         # print(f"Successfully inserted {len(data)} rows into {table_name}")
 
         log.info("write_to_audio_table function completed")
-        # return transcription
+        return "Write to DB Successful!" 
         
     except (Exception, Error) as error:
         log.info("Error writing to table", error=str(error))

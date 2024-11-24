@@ -158,7 +158,8 @@ async def parse_info_async(input: FunctionInputParams):
                 },
                 {
                     "role": "user", 
-                    "content": input.user_prompt
+                    "content": "Extract the required detailed analysis from the conversation."
+                    # "content": input.user_prompt
                 },
             ],
             temperature=0.0,
