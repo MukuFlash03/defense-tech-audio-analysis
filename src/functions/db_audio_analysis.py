@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import psycopg2
 from psycopg2 import Error
 from datetime import datetime
+import json
 
 load_dotenv()
 
@@ -33,30 +34,73 @@ def connect_to_postgres():
         return None
 
 @function.defn()
-async def write_to_audio_table(input):
+async def write_to_audio_table(conversation_analysis: FunctionInputParams):
     try:
-        log.info("write_to_audio_table function started", input=input)
+        log.info("write_to_audio_table function started", input=conversation_analysis)
         
         log.info("Before connecting to PostgreSQL database")
         connection = connect_to_postgres()
         cursor = connection.cursor()
         log.info("After connecting to PostgreSQL database")
         
-        # Example insert query - modify columns according to your table structure
-        # insert_query = f"""
-        #     INSERT INTO conversation_analysis (column1, column2, column3)
-        #     VALUES (%s, %s, %s)
+        data = json.loads(conversation_analysis.conversation_analysis)
+
+        # insert_query = """
+        #     INSERT INTO conversation_analysis (
+        #         priority_level, risk_assessment, key_insights, 
+        #         critical_entities, locations_mentioned, sentiment_summary,
+        #         source_reliability, information_credibility, recommended_actions,
+        #         entity_relationships, speakers, conversation_duration, analyzed_at
+        #     ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         # """
         
-        # # Execute the query for each row of data
-        # cursor.executemany(insert_query, data)
+        # cursor.execute(insert_query, (
+        #     data['priority_level'],
+        #     data['risk_assessment'],
+        #     data['key_insights'],
+        #     data['critical_entities'],
+        #     data['locations_mentioned'], 
+        #     data['sentiment_summary'],
+        #     data['source_reliability'],
+        #     data['information_credibility'],
+        #     data['recommended_actions'],
+        #     data['entity_relationships'],
+        #     data['speakers'],
+        #     data['conversation_duration'],
+        #     data['analyzed_at']
+        # ))
+
+        insert_query = """
+            INSERT INTO conversation_analysis (
+                priority_level, risk_assessment, key_insights, 
+                critical_entities, locations_mentioned, sentiment_summary,
+                source_reliability, information_credibility, recommended_actions,
+                entity_relationships, speakers, conversation_duration, analyzed_at
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """
         
-        # # Commit the transaction
-        # connection.commit()
+        # Convert arrays to JSON strings for JSON type columns
+        cursor.execute(insert_query, (
+            data['priority_level'],
+            data['risk_assessment'],
+            data['key_insights'],
+            json.dumps(data['critical_entities']),  # JSON column
+            json.dumps(data['locations_mentioned']),  # JSON column
+            data['sentiment_summary'],
+            data['source_reliability'],
+            data['information_credibility'],
+            json.dumps(data['recommended_actions']),  # JSON column
+            data['entity_relationships'],
+            json.dumps(data['speakers']),  # JSON column
+            data['conversation_duration'],
+            datetime.fromisoformat(data['analyzed_at'].replace('Z', '+00:00'))
+        ))
+
+        connection.commit()
         # print(f"Successfully inserted {len(data)} rows into {table_name}")
 
-        log.info("write_to_audio_table function completed")
-        return "Write to DB Successful!" 
+        log.info("write_to_audio_table function completed")        
+        return "Successfully wrote analysis to database"
         
     except (Exception, Error) as error:
         log.info("Error writing to table", error=str(error))

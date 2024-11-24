@@ -35,8 +35,8 @@ if st.button("Process Audio"):
                         st.session_state.response_history.append({
                             "file_name": uploaded_file.name,
                             "file_type": uploaded_file.type,
-                            "transcription": results[idx]['transcription'],
-                            "translation": results[idx]['translation']
+                            # "transcription": results[idx]['transcription'],
+                            # "translation": results[idx]['translation']
                     })
                 else:
                     st.error(f"Error: {response.status_code}")
@@ -52,7 +52,7 @@ if st.session_state.response_history:
         st.markdown(f"**Run {i}:**")
         st.markdown(f"**File Name:** {item['file_name']}")
         st.markdown(f"**File Type:** {item['file_type']}")
-        st.markdown(f"**Transcription:** {item['transcription']}")
-        st.markdown(f"**Translation:** {item['translation']}")
+        # st.markdown(f"**Transcription:** {item['transcription']}")
+        # st.markdown(f"**Translation:** {item['translation']}")
         st.markdown("---")
         

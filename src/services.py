@@ -12,7 +12,7 @@ async def main():
     await asyncio.gather(
         client.start_service(
             workflows=[ParentWorkflow, ChildWorkflow],
-            functions=[transcribe, translate, identify_speakers, extract_info, read_from_audio_table]
+            functions=[transcribe, translate, identify_speakers, extract_info, write_to_audio_table, read_from_audio_table]
         )
     )
 

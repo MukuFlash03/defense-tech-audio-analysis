@@ -33,8 +33,8 @@ class WorkflowInputParams:
 
 @dataclass
 class WorkflowOutputParams:
-    transcription: str
-    translation: str
+    # transcription: str
+    # translation: str
     translation_2: str
     conversation_analysis: str
     db_write_audio: Any
@@ -99,10 +99,6 @@ class ChildWorkflow:
 
         log.info("Completed translation_2....")
 
-        # formatted_translation = format_translated_conversation(translation_2)
-        # log.info("Formatted Translation:")
-        # log.info(formatted_translation)
-
         extract_info_prompt = f"""
         Instructions: Translate the following content to English. Output only the translated content.
         Content: {combined_text}
@@ -116,6 +112,9 @@ class ChildWorkflow:
             ExtractInfoFunctionInputParams(user_prompt=extract_info_prompt),
             start_to_close_timeout=timedelta(seconds=120),
         )
+        
+        log.info("Extracted JSON data:")
+        log.info(extraction_json_data)
 
         log.info("Completed extract_info....")
 
@@ -123,7 +122,7 @@ class ChildWorkflow:
         log.info("Before writing to DB in child workflow")
         db_write_audio = await workflow.step(
               write_to_audio_table,
-              WriteDataFunctionInputParams(conversation_input=extraction_json_data),
+              WriteDataFunctionInputParams(conversation_analysis=extraction_json_data),
               start_to_close_timeout=timedelta(seconds=120),
           )
         log.info("After writing to DB in child workflow")
