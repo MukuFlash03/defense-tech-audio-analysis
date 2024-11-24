@@ -5,6 +5,7 @@ import torch.nn.functional as F
 from transformers import Wav2Vec2FeatureExtractor, WavLMForXVector
 from restack_ai.function import function, log
 import numpy as np
+from datetime import datetime
 
 
 @dataclass
@@ -118,10 +119,13 @@ class FunctionInputParams:
     audio_data: Tuple[str, np.ndarray]
     command_text: str = None
     timestamp: str = None
+    # timestamp: datetime = None
 
 
 @function.defn()
 async def process_command_audio(input: FunctionInputParams):
+    print("Inside process_command_audio")
+    print("Input received:", input)
     try:
         log.info("Speaker identification started", input=input)
 
