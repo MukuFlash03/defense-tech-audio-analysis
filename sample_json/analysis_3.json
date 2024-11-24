@@ -1,0 +1,41 @@
+{
+  "analysis_a": {
+      "priority_level": "Medium",
+      "risk_assessment": "Deteriorating morale; potential combat situation developing in trenches",
+      "recommended_actions": [
+          "Address troop rotation schedule clarity",
+          "Improve communication systems",
+          "Review supply conditions",
+          "Assess combat readiness given low morale"
+      ],
+      "entity_relationships": "Boris and Ivan are fellow soldiers sharing frontline deployment experience",
+      "emotions_per_speaker": {
+          "Speaker A": ["homesickness", "frustration", "anxiety", "exhaustion"],
+          "Speaker B": ["resignation", "nostalgia", "concern", "fatigue"]
+      },
+      "speakers": ["Speaker A", "Speaker B"],
+      "speaker_roles": {
+          "Speaker A": "Frontline Soldier",
+          "Speaker B": "Frontline Soldier"
+      },
+      "conversation_duration": "5 minutes",
+      "conversation_timestamp": "2024-11-24T12:00:00Z"
+  },
+  "analysis_b": {
+      "key_insights": "Low troop morale, uncertain rotation schedules, poor living conditions, possible combat situation developing",
+      "critical_entities": [
+          "Boris",
+          "Ivan",
+          "military forces",
+          "trenches"
+      ],
+      "locations_mentioned": [
+          "front",
+          "trenches"
+      ],
+      "sentiment_summary": "Negative, stressed, homesick, uncertain about immediate future",
+      "source_reliability": "B",
+      "information_credibility": "3",
+      "analyzed_at": "2024-11-24T12:05:00Z"
+  }
+}
