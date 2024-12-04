@@ -1,12 +1,28 @@
 # USS Hornet Defense Tech Hackathon Quickstart: War Audio Transcription & Translation
 
-[Everything you need for the USS Hornet Defense Tech Hackathon](https://lu.ma/uss-hornet-hackathon?tk=DNbUwU)
+The main project is a multi-modal intelligence feed that integrates real-time data from several sources and classifies them according to NATO Admiralty code to analyze dynamic geopolitical events.
 
-Tech stack used:
+<img width="1440" alt="Screenshot 2024-11-24 at 10 55 00 PM" src="https://github.com/user-attachments/assets/6ebe351a-f3a1-4898-b9de-3a4e85311504">
 
-- Restack AI + Streamlit + FastApi + Groq + OpenBabylon
+Tech stack used: Python, Streamlit, FastApi, AssemblyAI, OpenAI, Groq, OpenBabylon, Restack AI
 
+This is the audio transcription / translation microservice of the larger multimodal data feed project. <br>
 The AI workflow will need an audio file as an input and will transcribe it & translate it to English.
+
+-------
+
+Screenshots
+
+1. Data Feed Dashboard
+
+<img width="1440" alt="Screenshot 2024-11-24 at 8 04 03 PM" src="https://github.com/user-attachments/assets/b9a794ed-bede-4858-8394-8be066a8d035">
+
+2. Audio Microservice
+
+<img width="1440" alt="Screenshot 2024-11-24 at 8 03 49 PM" src="https://github.com/user-attachments/assets/a8a2eb5d-05fe-444c-bb99-a5765e07cfd5">
+
+
+--------------
 
 ## Datasets
 
