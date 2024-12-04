@@ -4,7 +4,7 @@ The main project is a multi-modal intelligence feed that integrates real-time da
 
 <img width="1440" alt="Screenshot 2024-11-24 at 10 55 00 PM" src="https://github.com/user-attachments/assets/6ebe351a-f3a1-4898-b9de-3a4e85311504">
 
-Tech stack used: Python, Streamlit, FastApi, AssemblyAI, OpenAI, Groq, OpenBabylon, Restack AI
+Tech stack used: Python, Streamlit, FastApi, AssemblyAI, OpenAI, OpenBabylon, Restack AI
 
 This is the audio transcription / translation microservice of the larger multimodal data feed project. <br>
 The AI workflow will need an audio file as an input and will transcribe it & translate it to English.
